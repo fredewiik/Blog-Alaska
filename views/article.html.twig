@@ -1,0 +1,90 @@
+{% extends "layout.html.twig" %}
+
+{% block title %}{{ article.title }}{% endblock %}
+
+{% block content %}
+
+
+<p>
+    <h2>{{ article.title }}</h2>
+    <p>{{ article.content }}</p>
+
+    <h3>Comments</h3>
+    {% for comment in comments %}
+        <div class="comment">
+            <div>
+                <strong>{{ comment.author.username }}</strong> said : {{ comment.content }}<br>
+                {% if commentForm %} 
+                    <a href='' id="{{ comment.id }}" class="replyLink">Reply</a>
+                    <div></div>
+                {% endif %}
+            </div>
+
+            {% for answer in comment.childComments %}
+                <div class="commentLv1">
+                    <strong>{{ answer.author.username }}</strong> said : {{ answer.content }}<br>
+                    {% if commentForm %}
+                        <a href='' id="{{ answer.id }}" class="replyLink">Reply</a>
+                        <div></div>
+                    {% endif %}
+                </div>
+
+                {% for answer2 in answer.childComments %}
+                    <div class="commentLv2">
+                        <strong>{{ answer2.author.username }}</strong> said : {{ answer2.content }}<br>
+                        {% if commentForm %}
+                            <a href='' id="{{ answer2.id }}" class="replyLink">Reply</a>
+                            <div></div>
+                        {% endif %}
+                    </div>
+
+                    {% for answer3 in answer2.childComments %}
+                        <div class="commentLv3">
+                            <strong>{{ answer3.author.username }}</strong> said : {{ answer3.content }}<br>
+                        </div>
+                    {% endfor %}
+
+                {% endfor %}
+            {% endfor %}
+        </div>
+    {% else %}
+        No comments yet.
+    {% endfor %}
+
+    <h3>Add a comment</h3>
+    {% if commentForm %}
+        {{ form_start(commentForm) }}
+            <div class="form-group">
+                {{ form_errors(commentForm.content) }}
+                {{ form_widget(commentForm.content, { 'attr':  {
+                    'rows': '4',
+                    'class': 'form-control',
+                    'placeholder': 'Enter your comment'
+                }}) }}
+            </div>
+            <div class="form-group">
+                <input type="submit" class="btn btn-primary" value="Publish comment" />
+            </div>
+        {{ form_end(commentForm) }}
+        {% for flashMessage in app.session.flashbag.get('success') %}
+            <div class="alert alert-success">
+                {{ flashMessage }}
+            </div>
+        {% endfor %}
+    {% else %}
+        <a href="{{ path('login') }} ">Log in</a> to add comments.
+    {% endif %}
+</p>
+{% endblock %}
+
+{% block javascript %}
+    {{ parent() }}
+    <script type="text/javascript">
+        jQuery(document).ready(function() {
+            $(".replyLink").on("click", function(e){
+                console.log(e.target.id);
+                e.preventDefault();
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,47 @@
+body { 
+    padding-top: 50px; 
+}
+
+.footer {
+    border-top: 1px solid #ccc;
+    padding-top: 10px;
+    text-align: center;
+}
+
+.articleTitle:hover, .articleTitle:focus {
+    text-decoration: none;
+}
+
+.adminTable {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#errorPanel {
+    padding-top: 30px;
+    padding-bottom: 10px;
+}
+
+.commentLv1 {
+	margin-left: 40px;
+}
+
+.commentLv2 {
+	margin-left: 80px;
+}
+
+.commentLv3 {
+	margin-left: 120px;
+}
+
+.comment {
+	margin-bottom: 20px;
+}
+
+.replyLink {
+	font-size: 0.85em;
+}
+
+.replyLink:hover {
+	text-decoration: none;
+}
