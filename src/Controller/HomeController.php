@@ -38,6 +38,9 @@ class HomeController {
             $commentForm = $app['form.factory']->create(CommentType::class, $comment);
             $commentForm->handleRequest($request);
 
+            // Si Request a un paramètre parent_id envoyé par POST alors on redéfinit comment->parent_id
+            // var_dump($request);
+
             if ($commentForm->isSubmitted() && $commentForm->isValid()) {
                 $app['dao.comment']->save($comment);
                 $app['session']->getFlashBag()->add('success', 'Your comment was successfully added.');

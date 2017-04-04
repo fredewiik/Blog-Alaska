@@ -35,7 +35,7 @@ body {
 }
 
 .comment {
-	margin-bottom: 20px;
+	margin-bottom: 10px;
 }
 
 .replyLink {
@@ -44,4 +44,8 @@ body {
 
 .replyLink:hover {
 	text-decoration: none;
+}
+
+.reply-form {
+	display: none;
 }

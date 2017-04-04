@@ -16,7 +16,11 @@
                 <strong>{{ comment.author.username }}</strong> said : {{ comment.content }}<br>
                 {% if commentForm %} 
                     <a href='' id="{{ comment.id }}" class="replyLink">Reply</a>
-                    <div></div>
+                    <form method="post" action="{{ path('article', {'id': comment.article.id, 'parentId': comment.id}) }}" class="form-group reply-form">
+                        <textarea rows="2" class="form-control" placeholder="Enter your reply"></textarea>
+                        <input type="submit" class="btn btn-primary" value="Reply">
+                        <!-- voir si possible de rajouter un input hidden avec comme valeur {{ comment.id }} -->
+                    </form>
                 {% endif %}
             </div>
 
@@ -25,7 +29,10 @@
                     <strong>{{ answer.author.username }}</strong> said : {{ answer.content }}<br>
                     {% if commentForm %}
                         <a href='' id="{{ answer.id }}" class="replyLink">Reply</a>
-                        <div></div>
+                        <div class="form-group reply-form">
+                            <textarea rows="2" class="form-control" placeholder="Enter your reply"></textarea>
+                            <input type="submit" class="btn btn-primary" value="Reply">
+                        </div>
                     {% endif %}
                 </div>
 
@@ -34,7 +41,10 @@
                         <strong>{{ answer2.author.username }}</strong> said : {{ answer2.content }}<br>
                         {% if commentForm %}
                             <a href='' id="{{ answer2.id }}" class="replyLink">Reply</a>
-                            <div></div>
+                            <div class="form-group reply-form">
+                                <textarea rows="2" class="form-control" placeholder="Enter your reply"></textarea>
+                                <input type="submit" class="btn btn-primary" value="Reply">
+                            </div>
                         {% endif %}
                     </div>
 
@@ -82,7 +92,8 @@
     <script type="text/javascript">
         jQuery(document).ready(function() {
             $(".replyLink").on("click", function(e){
-                console.log(e.target.id);
+                var targetId = e.target.id;
+                $('#' + targetId).next().css('display', 'block');
                 e.preventDefault();
             });
         });
