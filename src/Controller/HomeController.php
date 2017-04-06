@@ -29,6 +29,17 @@ class HomeController {
     public function articleAction($id, Request $request, Application $app) {
         $article = $app['dao.article']->find($id);
         $commentFormView = null;
+
+        // Si requête ajax dans la requête on recherche le commentaire et met son champs isSignaled à true
+        if ($request->isXmlHttpRequest() ) {
+
+            $commentId = $request->request->get('commentId');
+            var_dump($commentId); die();
+            $comment = $app['dao.comment']->find($commentId);
+            $comment->setIsSignaled(TRUE);
+            $app['dao.comment']->save($comment);
+        }
+
         if ($app['security.authorization_checker']->isGranted('IS_AUTHENTICATED_FULLY')) {
             // A user is fully authenticated : he can add comments
             $comment = new Comment();
@@ -38,8 +49,13 @@ class HomeController {
             $commentForm = $app['form.factory']->create(CommentType::class, $comment);
             $commentForm->handleRequest($request);
 
-            // Si Request a un paramètre parent_id envoyé par POST alors on redéfinit comment->parent_id
-            // var_dump($request);
+            // Si Request a un paramètre parentId envoyé par POST alors on redéfinit comment->parent_id
+            if ($request->isMethod('POST') && $request->request->get('parentId')) {
+                $comment->setContent($request->request->get('content'));
+                $comment->setParentId($request->request->get('parentId'));
+                $app['dao.comment']->save($comment);
+                $app['session']->getFlashBag()->add('success', 'Your comment was successfully added.');
+            }
 
             if ($commentForm->isSubmitted() && $commentForm->isValid()) {
                 $app['dao.comment']->save($comment);

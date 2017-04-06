@@ -15,11 +15,12 @@
             <div>
                 <strong>{{ comment.author.username }}</strong> said : {{ comment.content }}<br>
                 {% if commentForm %} 
+                    <span class="label label-warning" data-comment="{{ comment.id }}" data-article="{{ comment.article.id }}">Warn</span>
                     <a href='' id="{{ comment.id }}" class="replyLink">Reply</a>
-                    <form method="post" action="{{ path('article', {'id': comment.article.id, 'parentId': comment.id}) }}" class="form-group reply-form">
-                        <textarea rows="2" class="form-control" placeholder="Enter your reply"></textarea>
+                    <form method="post" action="{{ path('article', {'id': comment.article.id }) }}" class="form-group reply-form">
+                        <textarea rows="2" class="form-control" placeholder="Enter your reply" name="content"></textarea>
+                        <input type="hidden" name="parentId" value="{{ comment.id }}">
                         <input type="submit" class="btn btn-primary" value="Reply">
-                        <!-- voir si possible de rajouter un input hidden avec comme valeur {{ comment.id }} -->
                     </form>
                 {% endif %}
             </div>
@@ -29,10 +30,11 @@
                     <strong>{{ answer.author.username }}</strong> said : {{ answer.content }}<br>
                     {% if commentForm %}
                         <a href='' id="{{ answer.id }}" class="replyLink">Reply</a>
-                        <div class="form-group reply-form">
-                            <textarea rows="2" class="form-control" placeholder="Enter your reply"></textarea>
+                        <form method="post" action="{{ path('article', {'id': comment.article.id }) }}" class="form-group reply-form">
+                            <textarea rows="2" class="form-control" placeholder="Enter your reply" name="content"></textarea>
+                            <input type="hidden" name="parentId" value="{{ answer.id }}">
                             <input type="submit" class="btn btn-primary" value="Reply">
-                        </div>
+                        </form>
                     {% endif %}
                 </div>
 
@@ -41,10 +43,11 @@
                         <strong>{{ answer2.author.username }}</strong> said : {{ answer2.content }}<br>
                         {% if commentForm %}
                             <a href='' id="{{ answer2.id }}" class="replyLink">Reply</a>
-                            <div class="form-group reply-form">
-                                <textarea rows="2" class="form-control" placeholder="Enter your reply"></textarea>
+                            <form method="post" action="{{ path('article', {'id': comment.article.id }) }}" class="form-group reply-form">
+                                <textarea rows="2" class="form-control" placeholder="Enter your reply" name="content"></textarea>
+                                <input type="hidden" name="parentId" value="{{ answer2.id }}">
                                 <input type="submit" class="btn btn-primary" value="Reply">
-                            </div>
+                            </form>
                         {% endif %}
                     </div>
 
@@ -91,10 +94,25 @@
     {{ parent() }}
     <script type="text/javascript">
         jQuery(document).ready(function() {
+
             $(".replyLink").on("click", function(e){
                 var targetId = e.target.id;
                 $('#' + targetId).next().css('display', 'block');
                 e.preventDefault();
+            });
+
+            // Si clique sur la classe label-warning envoi requête ajax avec comme data commentId
+            $('.label-warning').on('click', function(e) {
+                var commentID = $(this).attr('data-comment');
+                var articleId = $(this).attr('data-article');
+
+                $.ajax({
+                    url : 'http://microcms/article/'+articleId,
+                    type : 'POST',
+                    data : {commentId: commentID},
+                    success : function(){console.log('requête ajax bien envoyée')},
+                    error : function(resultat, satut, erreur){console.log(resultat + erreur)}
+                });
             });
         });
     </script>

@@ -37,7 +37,7 @@ class CommentDAO extends DAO
 
         // art_id is not selected by the SQL query
         // The article won't be retrieved during domain objet construction
-        $sql = "select com_id, com_content, usr_id from t_comment where art_id=? and parent_id=? order by com_id";
+        $sql = "select com_id, com_content, usr_id, parent_id from t_comment where art_id=? and parent_id=? order by com_id";
         $result = $this->getDb()->fetchAll($sql, array($articleId, 0));
 
         // Convert query result to an array of domain objects
@@ -62,7 +62,8 @@ class CommentDAO extends DAO
             'art_id' => $comment->getArticle()->getId(),
             'usr_id' => $comment->getAuthor()->getId(),
             'com_content' => $comment->getContent(),
-            'parent_id' => $comment->getParentId()
+            'parent_id' => $comment->getParentId(),
+            'is_signaled' => $comment->getIsSignaled()
             );
 
         if ($comment->getId()) {
@@ -84,10 +85,12 @@ class CommentDAO extends DAO
      * @return \MicroCMS\Domain\Comment
      */
     protected function buildDomainObject(array $row) {
+
         $comment = new Comment();
         $comment->setId($row['com_id']);
         $comment->setContent($row['com_content']);
         $comment->setChildComments($this->getChildren($row['com_id']));
+        $comment->setParentId($row['parent_id']);
 
         if (array_key_exists('art_id', $row)) {
             // Find and set the associated article
@@ -101,7 +104,6 @@ class CommentDAO extends DAO
             $user = $this->userDAO->find($userId);
             $comment->setAuthor($user);
         }
-        
         return $comment;
     }
 
@@ -111,7 +113,7 @@ class CommentDAO extends DAO
      * @return array A list of comments.
      */
     private function getChildren($id) {
-        $sql = "select com_id, com_content, usr_id from t_comment where parent_id=? order by com_id";
+        $sql = "select com_id, com_content, usr_id, parent_id from t_comment where parent_id=? order by com_id";
         $result = $this->getDb()->fetchAll($sql, array($id));
 
         // Convert query result to an array of domain objects
@@ -170,12 +172,42 @@ class CommentDAO extends DAO
     }
 
     /**
+     * Returns a comment matching the supplied Parent id.
+     *
+     * @param integer The comment id of the parent
+     *
+     * @return \MicroCMS\Domain\Comment|return NULL if no matching comment is found
+     */
+    public function findByParent($id) {
+        $sql = "select * from t_comment where parent_id=?";
+        $row = $this->getDb()->fetchAssoc($sql, array($id));
+
+        if ($row)
+            return $this->buildDomainObject($row);
+        else
+            return NULL;
+    }
+
+    /**
      * Removes a comment from the database.
      *
-     * @param @param integer $id The comment id
+     * @param integer $id The comment id
      */
     public function delete($id) {
+        $child = $this->findByParent($id);
+        if ($child)
+            $this->delete($child->getId());
+
         // Delete the comment
+        $this->getDb()->delete('t_comment', array('com_id' => $id));
+    }
+
+    /**
+    * Remove a comment from the database for a given parent
+    *
+    * @param integer the parent id
+    */
+    public function deleteCommentByParent($id) {
         $this->getDb()->delete('t_comment', array('com_id' => $id));
     }
 

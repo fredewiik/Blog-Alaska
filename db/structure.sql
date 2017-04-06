@@ -22,17 +22,7 @@ create table t_comment (
     art_id integer not null,
     usr_id integer not null,
     parent_id integer not null, -- represents a com_id
+    is_signaled boolean not null,
     constraint fk_com_art foreign key(art_id) references t_article(art_id),
     constraint fk_com_usr foreign key(usr_id) references t_user(usr_id)
 ) engine=innodb character set utf8 collate utf8_unicode_ci;
-
-/*
-create table threaded_comment (
-    threaded_com_id integer not null primary key auto_increment,
-    com_content varchar(500) not null,
-    com_id integer not null,
-    usr_id integer not null,
-    constraint fk_com foreign key(com_id) references t_comment(com_id),
-    constraint fk_com_usr foreign key(usr_id) references t_user(usr_id)
-) engine=innodb character set utf8 collate utf8_unicode_ci;
-*/

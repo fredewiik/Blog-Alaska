@@ -17,11 +17,11 @@ insert into t_user values
 
 
 insert into t_comment values
-(1, 'Great! Keep up the good work.', 1, 1, 0);
+(1, 'Great! Keep up the good work.', 1, 1, 0, FALSE);
 insert into t_comment values
-(2, "Thank you, I'll try my best.", 1, 2, 0);
+(2, "Thank you, I'll try my best.", 1, 2, 0, FALSE);
 insert into t_comment values
-(3, "This a comment reply", 1, 2, 1);
+(3, "This a comment reply", 1, 2, 1, FALSE);
 
 /*
 insert into threaded_comment values

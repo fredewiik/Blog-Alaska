@@ -109,6 +109,7 @@ class AdminController {
      * @param Application $app Silex application
      */
     public function deleteCommentAction($id, Application $app) {
+        // $app['dao.comment']->deleteCommentsForParent($id);
         $app['dao.comment']->delete($id);
         $app['session']->getFlashBag()->add('success', 'The comment was successfully removed.');
         // Redirect to admin home page

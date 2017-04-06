@@ -66,8 +66,8 @@
         {% endif %}
         <a href="{{ path('admin_article_add') }}"><button type="button" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Add article</button></a>
     </div>
+
     <div class="tab-pane fade adminTable" id="comments">
-        <!-- TODO Insérer ici le code de gestion des commentaires -->
         {% if comments %}
         <div class="table-responsive">
             <table class="table table-hover table-condensed">
@@ -112,11 +112,10 @@
         </div>
         {% else %}
         <div class="alert alert-warning">No comments found.</div>
-        {% endif %}
-        
+        {% endif %}    
     </div>
+
     <div class="tab-pane fade adminTable" id="users">
-        <!-- TODO Insérer ici le code de gestion des utilisateurs -->
         {% if users %}
         <div class="table-responsive">
             <table class="table table-hover table-condensed">
@@ -138,8 +137,10 @@
                         {% endif %}
                     </td>
                     <td>
+                        {% if user.username != "admin" %}
                         <a href="{{ path('admin_user_edit', { 'id': user.id }) }}" class="btn btn-info btn-xs" title="Edit"><span class="glyphicon glyphicon-edit"></span></a>
                         <button type="button" class="btn btn-danger btn-xs" title="Delete" data-toggle="modal" data-target="#userDialog{{ user.id }}"><span class="glyphicon glyphicon-remove"></span>
+                        {% endif %}
                         </button>
                         <div class="modal fade" id="userDialog{{ user.id }}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                             <div class="modal-dialog">

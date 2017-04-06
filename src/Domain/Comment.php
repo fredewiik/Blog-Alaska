@@ -40,6 +40,13 @@ class Comment
     private $parentId = 0;
 
     /**
+     * Specified if the comment has been signaled
+     *
+     * @var boolean
+     */
+    private $isSignaled;
+
+    /**
     * A list of all child comments
     *
     * @var Comment[]
@@ -96,5 +103,13 @@ class Comment
 
     public function setChildComments(array $comments) {
         $this->childComments = $comments;
+    }
+
+    public function getIsSignaled() {
+        return $this->isSignaled;
+    }
+
+    public function setIsSignaled(boolean $b) {
+        $this->isSignaled = $b;
     }
 }
