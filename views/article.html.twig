@@ -6,16 +6,16 @@
 
 
 <p>
-    <h2>{{ article.title }}</h2>
-    <p>{{ article.content }}</p>
+    <h2>{{ article.title | raw }}</h2>
+    <p>{{ article.content | raw }}</p>
 
     <h3>Comments</h3>
     {% for comment in comments %}
         <div class="comment">
             <div>
-                <strong>{{ comment.author.username }}</strong> said : {{ comment.content }}<br>
+                <span class='date'>{{ comment.commentDate }} </span><strong>{{ comment.author.username }}</strong> said : {{ comment.content | raw }}<br>
                 {% if commentForm %} 
-                    <span class="label label-warning" data-comment="{{ comment.id }}" data-article="{{ comment.article.id }}">Warn</span>
+                    <a href='{{ path('article', {'id': comment.article.id}) }}' class='warning' data-comment="{{ comment.id }}"><i class='fa fa-exclamation-circle'></i></a>
                     <a href='' id="{{ comment.id }}" class="replyLink">Reply</a>
                     <form method="post" action="{{ path('article', {'id': comment.article.id }) }}" class="form-group reply-form">
                         <textarea rows="2" class="form-control" placeholder="Enter your reply" name="content"></textarea>
@@ -27,8 +27,9 @@
 
             {% for answer in comment.childComments %}
                 <div class="commentLv1">
-                    <strong>{{ answer.author.username }}</strong> said : {{ answer.content }}<br>
+                    <span class='date'>{{ answer.commentDate }} </span><strong>{{ answer.author.username }}</strong> said : {{ answer.content | raw }}<br>
                     {% if commentForm %}
+                        <a href='{{ path('article', {'id': comment.article.id}) }}' class='warning' data-comment="{{ answer.id }}"><i class='fa fa-exclamation-circle'></i></a>
                         <a href='' id="{{ answer.id }}" class="replyLink">Reply</a>
                         <form method="post" action="{{ path('article', {'id': comment.article.id }) }}" class="form-group reply-form">
                             <textarea rows="2" class="form-control" placeholder="Enter your reply" name="content"></textarea>
@@ -40,8 +41,9 @@
 
                 {% for answer2 in answer.childComments %}
                     <div class="commentLv2">
-                        <strong>{{ answer2.author.username }}</strong> said : {{ answer2.content }}<br>
+                        <span class='date'>{{ answer2.commentDate }} </span><strong>{{ answer2.author.username }}</strong> said : {{ answer2.content | raw }}<br>
                         {% if commentForm %}
+                            <a href='{{ path('article', {'id': comment.article.id}) }}' class='warning' data-comment="{{ answer2.id }}"><i class='fa fa-exclamation-circle'></i></a>
                             <a href='' id="{{ answer2.id }}" class="replyLink">Reply</a>
                             <form method="post" action="{{ path('article', {'id': comment.article.id }) }}" class="form-group reply-form">
                                 <textarea rows="2" class="form-control" placeholder="Enter your reply" name="content"></textarea>
@@ -53,7 +55,8 @@
 
                     {% for answer3 in answer2.childComments %}
                         <div class="commentLv3">
-                            <strong>{{ answer3.author.username }}</strong> said : {{ answer3.content }}<br>
+                            <a href='{{ path('article', {'id': comment.article.id}) }}' class='warning' data-comment="{{ answer3.id }}"><i class='fa fa-exclamation-circle'></i></a>
+                            <span class='date'>{{ answer3.commentDate }} </span><strong>{{ answer3.author.username }}</strong> said : {{ answer3.content | raw }}<br>
                         </div>
                     {% endfor %}
 
@@ -95,19 +98,21 @@
     <script type="text/javascript">
         jQuery(document).ready(function() {
 
+            $('#comment_content').val('');
+
             $(".replyLink").on("click", function(e){
                 var targetId = e.target.id;
                 $('#' + targetId).next().css('display', 'block');
                 e.preventDefault();
             });
 
-            // Si clique sur la classe label-warning envoi requête ajax avec comme data commentId
-            $('.label-warning').on('click', function(e) {
+            // Si clique sur la classe warning envoi requête ajax avec comme data commentId
+            $('.warning').on('click', function(e) {
+                e.preventDefault();
                 var commentID = $(this).attr('data-comment');
-                var articleId = $(this).attr('data-article');
 
                 $.ajax({
-                    url : 'http://microcms/article/'+articleId,
+                    url : $(this).attr('href'),
                     type : 'POST',
                     data : {commentId: commentID},
                     success : function(){console.log('requête ajax bien envoyée')},

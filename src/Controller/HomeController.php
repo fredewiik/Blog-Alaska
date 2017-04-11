@@ -32,12 +32,11 @@ class HomeController {
 
         // Si requête ajax dans la requête on recherche le commentaire et met son champs isSignaled à true
         if ($request->isXmlHttpRequest() ) {
-
             $commentId = $request->request->get('commentId');
-            var_dump($commentId); die();
             $comment = $app['dao.comment']->find($commentId);
             $comment->setIsSignaled(TRUE);
             $app['dao.comment']->save($comment);
+            return '';
         }
 
         if ($app['security.authorization_checker']->isGranted('IS_AUTHENTICATED_FULLY')) {

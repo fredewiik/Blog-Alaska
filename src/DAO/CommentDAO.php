@@ -37,8 +37,8 @@ class CommentDAO extends DAO
 
         // art_id is not selected by the SQL query
         // The article won't be retrieved during domain objet construction
-        $sql = "select com_id, com_content, usr_id, parent_id from t_comment where art_id=? and parent_id=? order by com_id";
-        $result = $this->getDb()->fetchAll($sql, array($articleId, 0));
+        $sql = "select * from t_comment where art_id=? and parent_id=? and is_deleted=? order by com_id"; // com_id, com_content, usr_id, parent_id, comment_date
+        $result = $this->getDb()->fetchAll($sql, array($articleId, 0, FALSE));
 
         // Convert query result to an array of domain objects
         $comments = array();
@@ -63,7 +63,9 @@ class CommentDAO extends DAO
             'usr_id' => $comment->getAuthor()->getId(),
             'com_content' => $comment->getContent(),
             'parent_id' => $comment->getParentId(),
-            'is_signaled' => $comment->getIsSignaled()
+            'is_signaled' => $comment->getIsSignaled(),
+            'comment_date' => date('Y-m-d'),
+            'is_deleted' => $comment->getIsDeleted()
             );
 
         if ($comment->getId()) {
@@ -91,6 +93,8 @@ class CommentDAO extends DAO
         $comment->setContent($row['com_content']);
         $comment->setChildComments($this->getChildren($row['com_id']));
         $comment->setParentId($row['parent_id']);
+        $comment->setCommentDate($row['comment_date']);
+        $comment->setIsDeleted($row['is_deleted']=='0'? FALSE: TRUE);
 
         if (array_key_exists('art_id', $row)) {
             // Find and set the associated article
@@ -113,7 +117,7 @@ class CommentDAO extends DAO
      * @return array A list of comments.
      */
     private function getChildren($id) {
-        $sql = "select com_id, com_content, usr_id, parent_id from t_comment where parent_id=? order by com_id";
+        $sql = "select * from t_comment where parent_id=? order by com_id";
         $result = $this->getDb()->fetchAll($sql, array($id));
 
         // Convert query result to an array of domain objects
@@ -133,8 +137,26 @@ class CommentDAO extends DAO
      * @return array A list of all comments.
      */
     public function findAll() {
-        $sql = "select * from t_comment order by com_id desc";
-        $result = $this->getDb()->fetchAll($sql);
+        $sql = "select * from t_comment where is_deleted=? and is_signaled=? order by com_id desc";
+        $result = $this->getDb()->fetchAll($sql, array(FALSE, FALSE));
+
+        // Convert query result to an array of domain objects
+        $entities = array();
+        foreach ($result as $row) {
+            $id = $row['com_id'];
+            $entities[$id] = $this->buildDomainObject($row);
+        }
+        return $entities;
+    }
+
+    /**
+     * Returns a list of all signaled comments, sorted by date (most recent first).
+     *
+     * @return array A list of all signaled comments.
+     */
+    public function findAllSignaled() {
+        $sql = "select * from t_comment where is_deleted=? and is_signaled=? order by com_id desc";
+        $result = $this->getDb()->fetchAll($sql, array(FALSE, TRUE));
 
         // Convert query result to an array of domain objects
         $entities = array();
@@ -199,7 +221,10 @@ class CommentDAO extends DAO
             $this->delete($child->getId());
 
         // Delete the comment
-        $this->getDb()->delete('t_comment', array('com_id' => $id));
+        // $this->getDb()->delete('t_comment', array('com_id' => $id));
+        $comment = $this->find($id);
+        $comment->setIsDeleted(TRUE);
+        $this->save($comment);
     }
 
     /**
@@ -217,6 +242,14 @@ class CommentDAO extends DAO
      * @param integer $userId The id of the user
      */
     public function deleteAllByUser($userId) {
-        $this->getDb()->delete('t_comment', array('usr_id' => $userId));
+        // $this->getDb()->delete('t_comment', array('usr_id' => $userId));
+        $sql = "select * from t_comment where usr_id=?";
+        $result = $this->getDb()->fetchAll($sql, array($userId));
+
+        // Convert query result to an array of domain objects
+        foreach ($result as $row) {
+            $id = $row['com_id'];
+            $this->delete((int)$id);
+        }
     }
 }

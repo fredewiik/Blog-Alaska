@@ -20,10 +20,12 @@ class AdminController {
     public function indexAction(Application $app) {
         $articles = $app['dao.article']->findAll();
         $comments = $app['dao.comment']->findAll();
+        $signledComments = $app['dao.comment']->findAllSignaled();
         $users = $app['dao.user']->findAll();
         return $app['twig']->render('admin.html.twig', array(
             'articles' => $articles,
             'comments' => $comments,
+            'signaled_comments' => $signledComments,
             'users' => $users));
     }
 

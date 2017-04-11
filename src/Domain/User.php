@@ -42,6 +42,13 @@ class User implements UserInterface
      */
     private $role;
 
+    /**
+     * Specified if the user has been deleted
+     *
+     * @var boolean
+     */
+    private $isDeleted = 0;
+
     public function getId() {
         return $this->id;
     }
@@ -112,5 +119,13 @@ class User implements UserInterface
      */
     public function eraseCredentials() {
         // Nothing to do here
+    }
+
+    public function getIsDeleted() {
+        return $this->isDeleted;
+    }
+
+    public function setIsDeleted($b) {
+        $this->isDeleted = $b;
     }
 }

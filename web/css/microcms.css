@@ -35,7 +35,11 @@ body {
 }
 
 .comment {
-	margin-bottom: 10px;
+	margin-bottom: 20px;
+	border: solid;
+	border-color: #2965a8;
+	border-width: 2px;
+	padding: 10px;
 }
 
 .replyLink {
@@ -48,4 +52,8 @@ body {
 
 .reply-form {
 	display: none;
+}
+
+.date {
+	color: grey;
 }

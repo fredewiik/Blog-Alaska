@@ -74,6 +74,7 @@ class UserDAO extends DAO implements UserProviderInterface
         $user->setPassword($row['usr_password']);
         $user->setSalt($row['usr_salt']);
         $user->setRole($row['usr_role']);
+        $user->setIsDeleted($row['is_deleted']);
         return $user;
     }
 
@@ -83,8 +84,8 @@ class UserDAO extends DAO implements UserProviderInterface
      * @return array A list of all users.
      */
     public function findAll() {
-        $sql = "select * from t_user order by usr_role, usr_name";
-        $result = $this->getDb()->fetchAll($sql);
+        $sql = "select * from t_user where is_deleted=? order by usr_role, usr_name";
+        $result = $this->getDb()->fetchAll($sql, array(FALSE));
 
         // Convert query result to an array of domain objects
         $entities = array();
@@ -105,7 +106,8 @@ class UserDAO extends DAO implements UserProviderInterface
             'usr_name' => $user->getUsername(),
             'usr_salt' => $user->getSalt(),
             'usr_password' => $user->getPassword(),
-            'usr_role' => $user->getRole()
+            'usr_role' => $user->getRole(),
+            'is_deleted' => $user->getIsDeleted()
             );
 
         if ($user->getId()) {
@@ -123,10 +125,13 @@ class UserDAO extends DAO implements UserProviderInterface
     /**
      * Removes a user from the database.
      *
-     * @param @param integer $id The user id.
+     * @param integer $id The user id.
      */
     public function delete($id) {
         // Delete the user
-        $this->getDb()->delete('t_user', array('usr_id' => $id));
+        // $this->getDb()->delete('t_user', array('usr_id' => $id));
+        $user = $this->find($id);
+        $user->setIsDeleted(TRUE);
+        $this->save($user);
     }
 }

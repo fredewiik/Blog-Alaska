@@ -13,7 +13,8 @@ create table t_user (
     usr_name varchar(50) not null,
     usr_password varchar(88) not null,
     usr_salt varchar(23) not null,
-    usr_role varchar(50) not null 
+    usr_role varchar(50) not null ,
+    is_deleted boolean not null
 ) engine=innodb character set utf8 collate utf8_unicode_ci;
 
 create table t_comment (
@@ -23,6 +24,8 @@ create table t_comment (
     usr_id integer not null,
     parent_id integer not null, -- represents a com_id
     is_signaled boolean not null,
+    comment_date date not null,
+    is_deleted boolean not null,
     constraint fk_com_art foreign key(art_id) references t_article(art_id),
     constraint fk_com_usr foreign key(usr_id) references t_user(usr_id)
 ) engine=innodb character set utf8 collate utf8_unicode_ci;

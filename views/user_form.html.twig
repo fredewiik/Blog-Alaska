@@ -73,5 +73,11 @@
     {{ parent() }}
     <!-- TinyMCE -->
     <script src="https://cloud.tinymce.com/stable/tinymce.min.js?apiKey=yloauw6rbme8o4trjgvs469vy9j4kkpx5qwgwp1r39yo2wkt"></script>
-    <script>tinymce.init({ selector:'textarea' });</script>
+    <script>tinymce.init({
+        selector:'textarea', 
+        elementpath: false,
+        menubar: '',
+        forced_root_block : ''
+    });
+    </script>
 {% endblock %}

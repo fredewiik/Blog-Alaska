@@ -33,6 +33,13 @@ class Comment
     private $article;
 
     /**
+     * Date at which the comment was first saved
+     *
+     * @var date
+     */
+    private $commentDate;
+
+    /**
     * Associated comment
     *
     * @var integer
@@ -44,7 +51,14 @@ class Comment
      *
      * @var boolean
      */
-    private $isSignaled;
+    private $isSignaled = 0;
+
+    /**
+     * Specified if the comment has been deleted
+     *
+     * @var boolean
+     */
+    private $isDeleted = 0;
 
     /**
     * A list of all child comments
@@ -111,5 +125,21 @@ class Comment
 
     public function setIsSignaled(boolean $b) {
         $this->isSignaled = $b;
+    }
+
+    public function getCommentDate() {
+        return $this->commentDate;
+    }
+
+    public function setCommentDate($date) {
+        $this->commentDate = $date;
+    }
+
+    public function getIsDeleted() {
+        return $this->isDeleted;
+    }
+
+    public function setIsDeleted( $b) {
+        $this->isDeleted = $b;
     }
 }
