@@ -59,7 +59,6 @@ $app['dao.comment'] = function ($app) {
 };
 
 // Register error handler
-/*
 $app->error(function (\Exception $e, Request $request, $code) use ($app) {
     switch ($code) {
         case 403:
@@ -73,4 +72,3 @@ $app->error(function (\Exception $e, Request $request, $code) use ($app) {
     }
     return $app['twig']->render('error.html.twig', array('message' => $message));
 });
-*/
