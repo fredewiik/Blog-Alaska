@@ -59,6 +59,12 @@ class HomeController {
             if ($commentForm->isSubmitted() && $commentForm->isValid()) {
                 $app['dao.comment']->save($comment);
                 $app['session']->getFlashBag()->add('success', 'Your comment was successfully added.');
+                // On redéfinit $comment et $commentForm pour éviter de repasser le commentaire à la page après avoir été sauvegardé
+                $comment = new Comment();
+                $comment->setArticle($article);
+                $user = $app['user'];
+                $comment->setAuthor($user);
+                $commentForm = $app['form.factory']->create(CommentType::class, $comment);
             } 
             $commentFormView = $commentForm->createView();
         }

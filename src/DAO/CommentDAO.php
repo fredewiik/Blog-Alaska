@@ -94,7 +94,7 @@ class CommentDAO extends DAO
         $comment->setChildComments($this->getChildren($row['com_id']));
         $comment->setParentId($row['parent_id']);
         $comment->setCommentDate($row['comment_date']);
-        $comment->setIsDeleted($row['is_deleted']=='0'? FALSE: TRUE);
+        $comment->setIsDeleted($row['is_deleted']);
 
         if (array_key_exists('art_id', $row)) {
             // Find and set the associated article
@@ -112,13 +112,13 @@ class CommentDAO extends DAO
     }
 
     /**
-     * Returns a list of all child comments for a comment
+     * Returns a list of all non-deleted child comments for a comment
      *
      * @return array A list of comments.
      */
     private function getChildren($id) {
-        $sql = "select * from t_comment where parent_id=? order by com_id";
-        $result = $this->getDb()->fetchAll($sql, array($id));
+        $sql = "select * from t_comment where parent_id=? and is_deleted=? order by com_id";
+        $result = $this->getDb()->fetchAll($sql, array($id, FALSE));
 
         // Convert query result to an array of domain objects
         $comments = array();

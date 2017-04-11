@@ -123,7 +123,7 @@ class Comment
         return $this->isSignaled;
     }
 
-    public function setIsSignaled(boolean $b) {
+    public function setIsSignaled( $b) {
         $this->isSignaled = $b;
     }
 
@@ -139,7 +139,7 @@ class Comment
         return $this->isDeleted;
     }
 
-    public function setIsDeleted( $b) {
+    public function setIsDeleted($b) {
         $this->isDeleted = $b;
     }
 }
