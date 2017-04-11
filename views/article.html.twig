@@ -82,6 +82,7 @@
                 <input type="submit" class="btn btn-primary" value="Publish comment" />
             </div>
         {{ form_end(commentForm) }}
+        <div class="alert alert-success" style="display: none;">Your comment has been signaled, it will be checked</div>
         {% for flashMessage in app.session.flashbag.get('success') %}
             <div class="alert alert-success">
                 {{ flashMessage }}
@@ -115,7 +116,9 @@
                     url : $(this).attr('href'),
                     type : 'POST',
                     data : {commentId: commentID},
-                    success : function(){console.log('requête ajax bien envoyée')},
+                    success : function(){
+                        $('.alert-success').css('display', 'block');
+                    },
                     error : function(resultat, satut, erreur){
                         console.log(resultat + erreur);
                     }
